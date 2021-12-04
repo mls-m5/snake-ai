@@ -16,5 +16,6 @@ all
   includes =
     include
     lib/sdlpp/include
+    /usr/include/SDL2/
 
 
