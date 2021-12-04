@@ -1,0 +1,20 @@
+
+# using matmake2: https://github.com/laserskold/matmake2
+
+main
+  out = main
+  src =
+    src/*.cpp
+  command = [exe]
+  ldflags = -lSDL2 -lSDL2_image
+
+all
+  in = @main
+  config =
+    c++17
+    Wall
+  includes =
+    include
+    lib/sdlpp/include
+
+
