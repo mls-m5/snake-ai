@@ -46,6 +46,10 @@ struct Canvas {
         set(p.x, p.y, value);
     }
 
+    bool isInside(Point p) {
+        return p.x >= 0 && p.y >= 0 && p.x < width && p.y < height;
+    }
+
 private:
     const int _cellSize = 10;
     std::array<int, width *height> _data = {};

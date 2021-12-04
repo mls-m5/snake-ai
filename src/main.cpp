@@ -1,6 +1,7 @@
 
 
 #include "canvas.h"
+#include "sdlpp/events.hpp"
 #include "sdlpp/render.hpp"
 #include "sdlpp/surface.hpp"
 #include "sdlpp/window.hpp"
@@ -11,6 +12,39 @@
 using namespace snake;
 
 using namespace std::chrono_literals;
+
+Point getControl() {
+    Point control = {};
+
+    for (auto event = sdl::pollEvent(); event; event = sdl::pollEvent()) {
+        auto keyevent = event->key;
+        switch (event->type) {
+        case SDL_KEYDOWN:
+            switch (keyevent.keysym.scancode) {
+            case SDL_SCANCODE_LEFT:
+                control = {-1, 0};
+                break;
+            case SDL_SCANCODE_RIGHT:
+                control = {1, 0};
+                break;
+            case SDL_SCANCODE_UP:
+                control = {0, -1};
+                break;
+            case SDL_SCANCODE_DOWN:
+                control = {0, 1};
+                break;
+            default:
+                break;
+            }
+
+            break;
+        case SDL_KEYUP:
+            break;
+        }
+    }
+
+    return control;
+}
 
 int main(int argc, char **argv) {
     auto window = sdl::Window{"snake ai",
@@ -30,8 +64,8 @@ int main(int argc, char **argv) {
     auto canvas = Canvas{};
     auto snake = Snake{canvas};
 
-    for (int i = 0; i < 4; ++i) {
-        snake.update(0);
+    for (int i = 0; i < 40; ++i) {
+        snake.update(getControl());
 
         renderer.drawColor({10, 0, 0, 255});
         renderer.clear();
@@ -41,7 +75,7 @@ int main(int argc, char **argv) {
 
         renderer.present();
 
-        std::this_thread::sleep_for(1000ms);
+        std::this_thread::sleep_for(100ms);
     }
 
     return 0;

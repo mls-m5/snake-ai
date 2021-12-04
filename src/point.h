@@ -1,10 +1,15 @@
 #pragma once
 
 struct Point {
-    int x, y;
+    int x = 0;
+    int y = 0;
 
-    void operator+=(const Point &other) {
+    void operator+=(Point other) {
         x += other.x;
         y += other.y;
+    }
+
+    Point operator+(Point other) {
+        return {x + other.x, y + other.y};
     }
 };
