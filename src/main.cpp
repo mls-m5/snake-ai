@@ -87,6 +87,7 @@ int main(int argc, char **argv) {
 
         renderer.drawColor({0, 0, 0, 255});
         canvas.draw(renderer);
+        ai.draw(renderer);
 
         renderer.present();
 

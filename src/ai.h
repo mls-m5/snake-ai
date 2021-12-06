@@ -2,6 +2,7 @@
 
 #include "obstaclecanvas.h"
 #include "point.h"
+#include "searchcanvas.h"
 #include "snake.h"
 
 namespace snake {
@@ -11,8 +12,12 @@ struct Ai {
 
     Point update();
 
-    Snake &snake;
-    const ObstacleCanvas &canvas;
+    void draw(sdl::RendererView renderer);
+
+private:
+    Snake &_snake;
+    const ObstacleCanvas &_obstacleCanvas;
+    SearchCanvas _searchCanvas;
 };
 
 } // namespace snake
