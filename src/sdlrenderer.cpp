@@ -83,12 +83,18 @@ void SdlRenderer::draw(const Ai &ai) {
         auto &searchCanvas = ai.searchCanvas();
 
         // Draw the real path to apple
-        renderer.drawColor({255, 255, 255, 255});
-        Point pos = ai.obstacleCanvas().applePos;
-        for (SearchCanvasCell cell; cell = searchCanvas.at(pos), cell.explored;
-             pos = cell.parent) {
-            drawLine(pos, cell.parent);
-        }
+
+        auto backtrackDraw = [&](Point pos, const SearchCanvas &searchCanvas) {
+            renderer.drawColor({255, 255, 255, 255});
+            for (SearchCanvasCell cell;
+                 cell = searchCanvas.at(pos), cell.explored;
+                 pos = cell.parent) {
+                drawLine(pos, cell.parent);
+            }
+        };
+        //        Point pos = ai.obstacleCanvas().applePos;
+        backtrackDraw(ai.obstacleCanvas().applePos, ai.searchCanvas());
+        backtrackDraw(ai.snake().tail(), ai.returnSearchCanvas());
     }
 }
 
