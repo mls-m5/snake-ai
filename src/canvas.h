@@ -39,6 +39,16 @@ struct Canvas {
                 static_cast<int>(index / width)};
     }
 
+    void fill(Type value) {
+        for (auto &cell : _data) {
+            cell = value;
+        }
+    }
+
+    void clear() {
+        fill(Type{});
+    }
+
 private:
     std::array<Type, width *height> _data = {};
 };

@@ -13,6 +13,7 @@ struct Snake {
             auto p = Point{start.x, start.y + _len - i};
             canvas.set(p.x, p.y, 1);
             _segments.push_back(p);
+            canvas.snakeHeadPos = p;
         }
     };
 
@@ -45,6 +46,7 @@ struct Snake {
             return;
         }
 
+        _canvas.snakeHeadPos = head;
         _segments.push_back(head);
         _canvas.set(head, 1);
 
