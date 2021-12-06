@@ -1,6 +1,7 @@
 
 
-#include "canvas.h"
+#include "ai.h"
+#include "obstaclecanvas.h"
 #include "sdlpp/events.hpp"
 #include "sdlpp/render.hpp"
 #include "sdlpp/surface.hpp"
@@ -61,11 +62,17 @@ int main(int argc, char **argv) {
         exit(1);
     }
 
-    auto canvas = Canvas{};
+    auto canvas = ObstacleCanvas{};
     auto snake = Snake{canvas};
+    auto ai = Ai{snake, canvas};
 
-    for (int i = 0; i < 40; ++i) {
-        snake.update(getControl());
+    for (; !snake.isDead();) {
+        if (false) {
+            snake.update(ai.update());
+        }
+        else {
+            snake.update(getControl());
+        }
 
         renderer.drawColor({10, 0, 0, 255});
         renderer.clear();
@@ -75,7 +82,7 @@ int main(int argc, char **argv) {
 
         renderer.present();
 
-        std::this_thread::sleep_for(100ms);
+        std::this_thread::sleep_for(50ms);
     }
 
     return 0;

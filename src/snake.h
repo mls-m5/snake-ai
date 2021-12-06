@@ -1,12 +1,12 @@
 #pragma once
 
-#include "canvas.h"
+#include "obstaclecanvas.h"
 #include <list>
 
 namespace snake {
 
 struct Snake {
-    Snake(Canvas &canvas)
+    Snake(ObstacleCanvas &canvas)
         : _canvas{canvas} {
         auto start = Point{canvas.width / 2, canvas.height / 2};
         int len = 10;
@@ -25,7 +25,7 @@ struct Snake {
         auto head = _segments.back();
 
         if (auto t = head + requestedDirection;
-            _canvas.isInside(t) && _canvas.get(t) != 1) {
+            _canvas.isInside(t) && _canvas.get(t) != ObstacleCanvas::Snake) {
             _direction = requestedDirection;
         }
 
@@ -36,7 +36,7 @@ struct Snake {
             return;
         }
 
-        if (_canvas.get(head) == 1) {
+        if (_canvas.get(head) == ObstacleCanvas::Snake) {
             _isDead = true;
             return;
         }
@@ -65,7 +65,7 @@ struct Snake {
         return _isDead;
     }
 
-    Canvas &_canvas;
+    ObstacleCanvas &_canvas;
     std::list<Point> _segments;
 
     Point _direction = {0, -1};
