@@ -9,9 +9,8 @@ struct Snake {
     Snake(ObstacleCanvas &canvas)
         : _canvas{canvas} {
         auto start = Point{canvas.width / 2, canvas.height / 2};
-        int len = 10;
-        for (int i = 0; i < len; ++i) {
-            auto p = Point{start.x, start.y + len - i};
+        for (int i = 0; i < _len; ++i) {
+            auto p = Point{start.x, start.y + _len - i};
             canvas.set(p.x, p.y, 1);
             _segments.push_back(p);
         }
@@ -36,6 +35,11 @@ struct Snake {
             return;
         }
 
+        if (_canvas.get(head) == ObstacleCanvas::Apple) {
+            _len += 1;
+            _canvas.putApple();
+        }
+
         if (_canvas.get(head) == ObstacleCanvas::Snake) {
             _isDead = true;
             return;
@@ -44,8 +48,10 @@ struct Snake {
         _segments.push_back(head);
         _canvas.set(head, 1);
 
-        _canvas.set(_segments.front(), 0);
-        _segments.erase(_segments.begin(), std::next(_segments.begin()));
+        if (_segments.size() > _len) {
+            _canvas.set(_segments.front(), 0);
+            _segments.erase(_segments.begin(), std::next(_segments.begin()));
+        }
     }
 
     // For two finger controller
@@ -75,6 +81,7 @@ private:
 
     Point _direction = {0, -1};
     bool _isDead = false;
+    int _len = 10;
 };
 
 } // namespace snake

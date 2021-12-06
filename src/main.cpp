@@ -84,7 +84,7 @@ int main(int argc, char **argv) {
 
         renderer.present();
 
-        std::this_thread::sleep_for(50ms);
+        std::this_thread::sleep_for(100ms);
     }
 
     return 0;
