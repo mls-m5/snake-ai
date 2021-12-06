@@ -24,6 +24,13 @@ void Ai::draw(sdl::RendererView renderer) {
 
     renderer.drawColor({100, 100, 100, 255});
 
+    auto drawLine = [&](Point from, Point to) {
+        renderer.drawLine(from.x * cellSize + offset,
+                          from.y * cellSize + offset,
+                          to.x * cellSize + offset,
+                          to.y * cellSize + offset);
+    };
+
     for (int y = 0; y < _searchCanvas.height; ++y) {
         for (int x = 0; x < _searchCanvas.width; ++x) {
             auto cell = _searchCanvas.at(x, y);
@@ -35,6 +42,14 @@ void Ai::draw(sdl::RendererView renderer) {
                                   parent.y * cellSize + offset);
             }
         }
+    }
+
+    // Draw the real path to apple
+    renderer.drawColor({255, 255, 255, 255});
+    Point pos = _obstacleCanvas.applePos;
+    for (SearchCanvasCell cell; cell = _searchCanvas.at(pos), cell.parent;
+         pos = cell.parent) {
+        drawLine(pos, cell.parent);
     }
 }
 
