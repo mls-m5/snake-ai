@@ -2,7 +2,7 @@
 # using matmake2: https://github.com/laserskold/matmake2
 
 main
-  out = main
+  out = snake-ai
   src =
     src/*.cpp
   command = [exe]

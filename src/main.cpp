@@ -48,6 +48,7 @@ Point getControl() {
 }
 
 int main(int argc, char **argv) {
+    const auto settings = Settings{argc, argv};
     auto window = sdl::Window{"snake ai",
                               SDL_WINDOWPOS_CENTERED,
                               SDL_WINDOWPOS_CENTERED,
@@ -66,7 +67,7 @@ int main(int argc, char **argv) {
     auto snake = Snake{canvas};
 
     canvas.putApple();
-    auto ai = Ai{snake, canvas};
+    auto ai = Ai{snake, canvas, settings};
 
     Point control;
 
@@ -112,7 +113,7 @@ int main(int argc, char **argv) {
             snake.update(control);
         }
 
-        std::this_thread::sleep_for(100ms);
+        std::this_thread::sleep_for(1ms * settings.msDelay);
     }
 
     std::this_thread::sleep_for(1000ms);

@@ -2,9 +2,10 @@
 
 namespace snake {
 
-Ai::Ai(Snake &snake, const ObstacleCanvas &canvas)
+Ai::Ai(Snake &snake, const ObstacleCanvas &canvas, const Settings &settings)
     : _snake{snake}
-    , _obstacleCanvas{canvas} {
+    , _obstacleCanvas{canvas}
+    , _settings{settings} {
     _edges.reserve(_obstacleCanvas.data().size());
 }
 
@@ -38,25 +39,29 @@ void Ai::draw(sdl::RendererView renderer) {
                           to.y * cellSize + offset);
     };
 
-    for (int y = 0; y < _searchCanvas.height; ++y) {
-        for (int x = 0; x < _searchCanvas.width; ++x) {
-            auto cell = _searchCanvas.at(x, y);
-            if (cell.explored) {
-                auto parent = cell.parent;
-                renderer.drawLine(x * cellSize + offset,
-                                  y * cellSize + offset,
-                                  parent.x * cellSize + offset,
-                                  parent.y * cellSize + offset);
+    if (_settings.shouldShowSearch) {
+        for (int y = 0; y < _searchCanvas.height; ++y) {
+            for (int x = 0; x < _searchCanvas.width; ++x) {
+                auto cell = _searchCanvas.at(x, y);
+                if (cell.explored) {
+                    auto parent = cell.parent;
+                    renderer.drawLine(x * cellSize + offset,
+                                      y * cellSize + offset,
+                                      parent.x * cellSize + offset,
+                                      parent.y * cellSize + offset);
+                }
             }
         }
     }
 
-    // Draw the real path to apple
-    renderer.drawColor({255, 255, 255, 255});
-    Point pos = _obstacleCanvas.applePos;
-    for (SearchCanvasCell cell; cell = _searchCanvas.at(pos), cell.explored;
-         pos = cell.parent) {
-        drawLine(pos, cell.parent);
+    if (_settings.shouldShowPath) {
+        // Draw the real path to apple
+        renderer.drawColor({255, 255, 255, 255});
+        Point pos = _obstacleCanvas.applePos;
+        for (SearchCanvasCell cell; cell = _searchCanvas.at(pos), cell.explored;
+             pos = cell.parent) {
+            drawLine(pos, cell.parent);
+        }
     }
 }
 
