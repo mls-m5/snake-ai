@@ -23,12 +23,17 @@ struct Ai {
         return _searchCanvas;
     }
 
+    const auto &returnSearchCanvas() const {
+        return _returnSearchCanvas;
+    }
+
     auto lastSearchTime() const {
         return _lastSearchTime;
     }
 
 private:
-    void search(Point to, Point from, SearchCanvas &searchCanvas);
+    bool search(Point to, Point from, SearchCanvas &searchCanvas);
+
     Snake &_snake;
     const ObstacleCanvas &_obstacleCanvas;
     SearchCanvas _searchCanvas;

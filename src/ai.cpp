@@ -12,31 +12,54 @@ Point Ai::update() {
     auto start = std::chrono::high_resolution_clock::now();
     _searchCanvas.clear();
 
+    bool bailout = false;
+
     auto head = _obstacleCanvas.snakeHeadPos;
 
-    search(_obstacleCanvas.applePos, head, _searchCanvas);
+    if (!search(_obstacleCanvas.applePos, head, _searchCanvas)) {
+        return {0, 0};
+    }
 
     _returnSearchCanvas.clear();
 
-    Point pos = _obstacleCanvas.applePos;
-    for (SearchCanvasCell cell; cell = _searchCanvas.at(pos), cell.explored;
-         pos = cell.parent) {
-        _returnSearchCanvas.set(pos, cell);
-        if (cell.parent.x == head.x && cell.parent.y == head.y) {
-            _lastSearchTime = std::chrono::high_resolution_clock::now() - start;
-            return pos - head;
+    Point control = {0, 0};
+
+    auto backtrack = [&](Point pos) {
+        for (SearchCanvasCell cell; cell = _searchCanvas.at(pos), cell.explored;
+             pos = cell.parent) {
+            _returnSearchCanvas.set(pos, cell);
+            if (cell.parent.x == head.x && cell.parent.y == head.y) {
+                _lastSearchTime =
+                    std::chrono::high_resolution_clock::now() - start;
+                control = pos - head;
+                break;
+            }
         }
+    };
+
+    backtrack(_obstacleCanvas.applePos);
+
+    if (!search(_snake.segments().front(),
+                _obstacleCanvas.applePos,
+                _returnSearchCanvas)) {
+        bailout = true;
     }
 
     _lastSearchTime = std::chrono::high_resolution_clock::now() - start;
 
-    return {0, 0};
+    if (bailout) {
+        _searchCanvas.clear();
+        _returnSearchCanvas.clear();
+        search(
+            _snake.segments().back(), _snake.segments().front(), _searchCanvas);
+    }
+
+    return control;
 }
 
-void Ai::search(Point to, Point from, SearchCanvas &searchCanvas) {
-    auto e = [&](Point to, Point from) {
-        auto res = searchCanvas.exploreCell(
-            to, from, _obstacleCanvas.applePos, _obstacleCanvas);
+bool Ai::search(Point to, Point from, SearchCanvas &searchCanvas) {
+    auto e = [&, target = to](Point to, Point from) {
+        auto res = searchCanvas.exploreCell(to, from, target, _obstacleCanvas);
         if (res == SearchCanvas::Explored) {
             _edges.push_back(to);
         }
@@ -58,9 +81,10 @@ void Ai::search(Point to, Point from, SearchCanvas &searchCanvas) {
         res |= e(p + Point::Right(), p);
 
         if (res) {
-            break;
+            return true;
         }
     }
+    return false;
 }
 
 } // namespace snake

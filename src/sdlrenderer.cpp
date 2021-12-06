@@ -74,7 +74,10 @@ void SdlRenderer::draw(const Ai &ai) {
                           to.y * cellSize + offset);
     };
 
-    draw(ai.searchCanvas(), cellSize);
+    if (settings.shouldShowSearch) {
+        draw(ai.searchCanvas(), cellSize);
+        draw(ai.returnSearchCanvas(), cellSize, 1);
+    }
 
     if (settings.shouldShowPath) {
         auto &searchCanvas = ai.searchCanvas();
@@ -89,19 +92,19 @@ void SdlRenderer::draw(const Ai &ai) {
     }
 }
 
-void SdlRenderer::draw(const SearchCanvas &canvas, int cellSize) {
-    const auto offset = cellSize / 2;
-    if (settings.shouldShowSearch) {
-        for (int y = 0; y < canvas.height; ++y) {
-            for (int x = 0; x < canvas.width; ++x) {
-                auto cell = canvas.at(x, y);
-                if (cell.explored) {
-                    auto parent = cell.parent;
-                    renderer.drawLine(x * cellSize + offset,
-                                      y * cellSize + offset,
-                                      parent.x * cellSize + offset,
-                                      parent.y * cellSize + offset);
-                }
+void SdlRenderer::draw(const SearchCanvas &canvas,
+                       int cellSize,
+                       int duplicationOffset) {
+    const auto offset = cellSize / 2 + duplicationOffset;
+    for (int y = 0; y < canvas.height; ++y) {
+        for (int x = 0; x < canvas.width; ++x) {
+            auto cell = canvas.at(x, y);
+            if (cell.explored) {
+                auto parent = cell.parent;
+                renderer.drawLine(x * cellSize + offset,
+                                  y * cellSize + offset,
+                                  parent.x * cellSize + offset,
+                                  parent.y * cellSize + offset);
             }
         }
     }

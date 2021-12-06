@@ -20,7 +20,7 @@ struct SdlRenderer {
 
     void draw(const ObstacleCanvas &);
     void draw(const Ai &);
-    void draw(const SearchCanvas &, int cellSize);
+    void draw(const SearchCanvas &, int cellSize, int offset = 0);
 
     sdl::Window window;
     sdl::Renderer renderer;
