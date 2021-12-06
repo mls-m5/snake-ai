@@ -17,6 +17,7 @@ arguments:
 --show-search      show the full search tree
 --delay            delay between frames in ms (0 for as fast as possible)
 --help             show this help
+--startlen         start length of the snake
 
 )_";
 
@@ -25,6 +26,7 @@ arguments:
     bool hideGui = false;
 
     int msDelay = 100;
+    int startLen = 10;
 
     Settings(int argc, char **argv) {
         auto args = std::vector<std::string_view>{argv + 1, argv + argc};
@@ -45,6 +47,10 @@ arguments:
             else if (arg == "--no-gui") {
                 hideGui = true;
                 msDelay = 0;
+            }
+            else if (arg == "--startlen") {
+                ++i;
+                startLen = std::stoi(args.at(i).data());
             }
             else if (arg == "--help") {
                 std::cout << helpStr << std::endl;

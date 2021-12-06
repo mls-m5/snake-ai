@@ -31,6 +31,10 @@ struct Ai {
         return _lastSearchTime;
     }
 
+    auto &snake() const {
+        return _snake;
+    }
+
 private:
     bool search(Point to, Point from, SearchCanvas &searchCanvas);
 

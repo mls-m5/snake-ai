@@ -38,7 +38,8 @@ Point getControl() {
             }
 
             break;
-        case SDL_KEYUP:
+        case SDL_QUIT:
+            exit(0);
             break;
         }
     }
@@ -52,7 +53,7 @@ int main(int argc, char **argv) {
     auto renderer = SdlRenderer{settings};
 
     auto canvas = ObstacleCanvas{};
-    auto snake = Snake{canvas};
+    auto snake = Snake{canvas, settings.startLen};
     auto logger = Logger{std::cout};
 
     auto numApples = int{0};
@@ -88,6 +89,7 @@ int main(int argc, char **argv) {
                 return getControl();
                 break;
             case Ai:
+                getControl();
                 return ai.update();
                 break;
             case DryrunAi: { // Update ai but let human do the moving
@@ -117,8 +119,11 @@ int main(int argc, char **argv) {
         }
     }
 
-    if (settings.msDelay) {
-        std::this_thread::sleep_for(5000ms);
+    if (!settings.hideGui && settings.msDelay) {
+        for (int i = 0; i < 1000; ++i) {
+            getControl();
+            std::this_thread::sleep_for(100ms);
+        }
     }
 
     return 0;

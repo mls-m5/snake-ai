@@ -7,11 +7,13 @@
 namespace snake {
 
 struct Snake {
-    Snake(ObstacleCanvas &canvas)
-        : _canvas{canvas} {
-        auto start = Point{canvas.width / 2 * 0, canvas.height / 2};
-        for (int i = 0; i < _len; ++i) {
-            auto p = Point{start.x, start.y + _len - i};
+    Snake(ObstacleCanvas &canvas, int startLen = 10)
+        : _canvas{canvas}
+        , _len{startLen} {
+        auto start = Point{canvas.width / 2, canvas.height / 2};
+        auto len = std::min(_len, canvas.height / 2 - 1);
+        for (int i = 0; i < len; ++i) {
+            auto p = Point{start.x, start.y + len - i};
             canvas.set(p.x, p.y, 1);
             _segments.push_back(p);
             canvas.snakeHeadPos = p;
@@ -86,6 +88,14 @@ struct Snake {
 
     int len() const {
         return _len;
+    }
+
+    Point tail() {
+        return _segments.front();
+    }
+
+    Point head() {
+        return _segments.back();
     }
 
 private:
