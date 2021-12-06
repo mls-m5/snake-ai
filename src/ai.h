@@ -5,6 +5,7 @@
 #include "searchcanvas.h"
 #include "settings.h"
 #include "snake.h"
+#include <chrono>
 #include <vector>
 
 namespace snake {
@@ -14,14 +15,16 @@ struct Ai {
 
     Point update();
 
-    void draw(sdl::RendererView renderer);
-
     const auto &obstacleCanvas() const {
         return _obstacleCanvas;
     }
 
     const auto &searchCanvas() const {
         return _searchCanvas;
+    }
+
+    auto lastSearchTime() const {
+        return _lastSearchTime;
     }
 
 private:
@@ -31,6 +34,7 @@ private:
     SearchCanvas _searchCanvas;
     SearchCanvas _returnSearchCanvas;
     std::vector<Point> _edges;
+    std::chrono::high_resolution_clock::duration _lastSearchTime = {};
 };
 
 } // namespace snake

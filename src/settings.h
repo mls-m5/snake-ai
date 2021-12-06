@@ -12,6 +12,7 @@ snake-ai
 
 arguments:
 
+--no-gui           disable graphics (also disables delay)
 --show-path        show the selected path
 --show-search      show the full search tree
 --delay            delay between frames in ms (0 for as fast as possible)
@@ -21,6 +22,7 @@ arguments:
 
     bool shouldShowSearch = false;
     bool shouldShowPath = false;
+    bool hideGui = false;
 
     int msDelay = 100;
 
@@ -39,6 +41,10 @@ arguments:
             else if (arg == "--delay") {
                 ++i;
                 msDelay = std::stoi(args.at(i).data());
+            }
+            else if (arg == "--no-gui") {
+                hideGui = true;
+                msDelay = 0;
             }
             else if (arg == "--help") {
                 std::cout << helpStr << std::endl;

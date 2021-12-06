@@ -1,6 +1,7 @@
 
 
 #include "ai.h"
+#include "logger.h"
 #include "obstaclecanvas.h"
 #include "sdlpp/events.hpp"
 #include "sdlrenderer.h"
@@ -52,9 +53,23 @@ int main(int argc, char **argv) {
 
     auto canvas = ObstacleCanvas{};
     auto snake = Snake{canvas};
+    auto logger = Logger{std::cout};
+
+    auto numApples = int{0};
+    auto steps = int{0};
 
     canvas.putApple();
     auto ai = Ai{snake, canvas, settings};
+
+    snake.logCallback([&] {
+        ++numApples;
+        logger.logProgress({
+            .steps = steps,
+            .apples = numApples,
+            .length = snake.len(),
+            .searchTimeMs = ai.lastSearchTime().count(),
+        });
+    });
 
     Point control;
 
@@ -66,7 +81,7 @@ int main(int argc, char **argv) {
 
     auto mode = Ai;
 
-    for (; !snake.isDead();) {
+    for (; !snake.isDead(); ++steps) {
         control = [&ai, mode] {
             switch (mode) {
             case Human:
@@ -87,18 +102,24 @@ int main(int argc, char **argv) {
             snake.update(control);
         }
 
-        renderer.draw(canvas);
-        renderer.draw(ai);
-        renderer.finishDraw();
+        if (!settings.hideGui) {
+            renderer.draw(canvas);
+            renderer.draw(ai);
+            renderer.finishDraw();
+        }
 
         if (mode == Ai) {
             snake.update(control);
         }
 
-        std::this_thread::sleep_for(1ms * settings.msDelay);
+        if (settings.msDelay) {
+            std::this_thread::sleep_for(1ms * settings.msDelay);
+        }
     }
 
-    std::this_thread::sleep_for(1000ms);
+    if (settings.msDelay) {
+        std::this_thread::sleep_for(1000ms);
+    }
 
     return 0;
 }

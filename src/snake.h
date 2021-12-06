@@ -1,6 +1,7 @@
 #pragma once
 
 #include "obstaclecanvas.h"
+#include <functional>
 #include <list>
 
 namespace snake {
@@ -37,8 +38,10 @@ struct Snake {
         }
 
         if (_canvas.at(head) == ObstacleCanvas::Apple) {
-            _len += 1;
+            ++_len;
             _canvas.putApple();
+
+            _logCallback();
         }
 
         if (_canvas.at(head) == ObstacleCanvas::Snake) {
@@ -77,6 +80,14 @@ struct Snake {
         return _segments;
     }
 
+    void logCallback(std::function<void()> f) {
+        _logCallback = f;
+    }
+
+    int len() const {
+        return _len;
+    }
+
 private:
     ObstacleCanvas &_canvas;
     std::list<Point> _segments;
@@ -84,6 +95,7 @@ private:
     Point _direction = {0, -1};
     bool _isDead = false;
     int _len = 10;
+    std::function<void()> _logCallback;
 };
 
 } // namespace snake

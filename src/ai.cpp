@@ -9,6 +9,7 @@ Ai::Ai(Snake &snake, const ObstacleCanvas &canvas, const Settings &settings)
 }
 
 Point Ai::update() {
+    auto start = std::chrono::high_resolution_clock::now();
     _searchCanvas.clear();
 
     auto head = _obstacleCanvas.snakeHeadPos;
@@ -22,13 +23,15 @@ Point Ai::update() {
          pos = cell.parent) {
         _returnSearchCanvas.set(pos, cell);
         if (cell.parent.x == head.x && cell.parent.y == head.y) {
+            _lastSearchTime = std::chrono::high_resolution_clock::now() - start;
             return pos - head;
         }
     }
+
+    _lastSearchTime = std::chrono::high_resolution_clock::now() - start;
+
     return {0, 0};
 }
-
-void Ai::draw(sdl::RendererView renderer) {}
 
 void Ai::search(Point to, Point from, SearchCanvas &searchCanvas) {
     auto e = [&](Point to, Point from) {
