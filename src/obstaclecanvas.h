@@ -18,8 +18,6 @@ struct ObstacleCanvas : public Canvas<int> {
 
     using DataT = int;
 
-    void draw(sdl::RendererView renderer);
-
     void putApple();
 
     Point applePos;

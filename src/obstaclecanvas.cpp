@@ -9,27 +9,6 @@ auto generator = std::mt19937{std::random_device{}()};
 
 namespace snake {
 
-void ObstacleCanvas::draw(sdl::RendererView renderer) {
-    renderer.drawColor({0, 20, 0, 255});
-    renderer.fillRect({0, 0, width * cellSize, height * cellSize});
-
-    for (int y = 0; y < height; ++y) {
-        for (int x = 0; x < width; ++x) {
-            auto d = at(x, y);
-            if (d) {
-                if (d == 1) {
-                    renderer.drawColor({100, 100, 100, 255});
-                }
-                else if (d == 2) {
-                    renderer.drawColor({255, 0, 0, 255});
-                }
-                renderer.fillRect(
-                    {x * cellSize, y * cellSize, cellSize, cellSize});
-            }
-        }
-    }
-}
-
 void ObstacleCanvas::putApple() {
     int numPossibleCells = 0;
     for (auto cell : data()) {

@@ -3,9 +3,7 @@
 #include "ai.h"
 #include "obstaclecanvas.h"
 #include "sdlpp/events.hpp"
-#include "sdlpp/render.hpp"
-#include "sdlpp/surface.hpp"
-#include "sdlpp/window.hpp"
+#include "sdlrenderer.h"
 #include "snake.h"
 #include <iostream>
 #include <thread>
@@ -49,19 +47,8 @@ Point getControl() {
 
 int main(int argc, char **argv) {
     const auto settings = Settings{argc, argv};
-    auto window = sdl::Window{"snake ai",
-                              SDL_WINDOWPOS_CENTERED,
-                              SDL_WINDOWPOS_CENTERED,
-                              500,
-                              500,
-                              SDL_WINDOW_OPENGL};
 
-    auto renderer = sdl::Renderer{window.get(), -1, SDL_RENDERER_ACCELERATED};
-
-    if (!renderer) {
-        std::cerr << "could not create renderer\n";
-        exit(1);
-    }
+    auto renderer = SdlRenderer{settings};
 
     auto canvas = ObstacleCanvas{};
     auto snake = Snake{canvas};
@@ -100,14 +87,9 @@ int main(int argc, char **argv) {
             snake.update(control);
         }
 
-        renderer.drawColor({10, 0, 0, 255});
-        renderer.clear();
-
-        renderer.drawColor({0, 0, 0, 255});
-        canvas.draw(renderer);
-        ai.draw(renderer);
-
-        renderer.present();
+        renderer.draw(canvas);
+        renderer.draw(ai);
+        renderer.finishDraw();
 
         if (mode == Ai) {
             snake.update(control);

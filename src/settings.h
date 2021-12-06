@@ -4,6 +4,8 @@
 #include <string_view>
 #include <vector>
 
+namespace snake {
+
 struct Settings {
     std::string_view helpStr = R"_(
 snake-ai
@@ -45,3 +47,5 @@ arguments:
         }
     }
 };
+
+} // namespace snake
