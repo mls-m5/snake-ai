@@ -42,10 +42,10 @@ Point Ai::update() {
         }
     }
 
-    // Could not find a way to safely eat apple
+    // Could not find a way to safely eat apple, instead focus on following tail
     _searchCanvas.clear();
     _returnSearchCanvas.clear();
-    search(_snake.segments().back(), _snake.segments().front(), _searchCanvas);
+    search(_snake.tail(), _snake.head(), _searchCanvas);
     backtrack(_snake.segments().front());
 
     return control;
