@@ -69,11 +69,17 @@ int main(int argc, char **argv) {
     auto ai = Ai{snake, canvas};
 
     for (; !snake.isDead();) {
-        if (false) {
-            snake.update(ai.update());
-        }
-        else {
+        switch (2) {
+        case 0:
             snake.update(getControl());
+            break;
+        case 1:
+            snake.update(ai.update());
+            break;
+        case 2: { // Update ai but let human do the moving
+            ai.update();
+            snake.update(getControl());
+        } break;
         }
 
         renderer.drawColor({10, 0, 0, 255});

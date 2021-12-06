@@ -7,12 +7,12 @@
 namespace snake {
 
 struct Ai {
-    Ai(Snake &snake, ObstacleCanvas &canvas);
+    Ai(Snake &snake, const ObstacleCanvas &canvas);
 
     Point update();
 
     Snake &snake;
-    ObstacleCanvas &canvas;
+    const ObstacleCanvas &canvas;
 };
 
 } // namespace snake

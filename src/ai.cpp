@@ -2,7 +2,7 @@
 
 namespace snake {
 
-Ai::Ai(Snake &snake, ObstacleCanvas &canvas)
+Ai::Ai(Snake &snake, const ObstacleCanvas &canvas)
     : snake{snake}
     , canvas{canvas} {}
 

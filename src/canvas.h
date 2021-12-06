@@ -35,7 +35,8 @@ struct Canvas {
     }
 
     Point pointFromIndex(size_t index) {
-        return {index % width, index / width};
+        return {static_cast<int>(index % width),
+                static_cast<int>(index / width)};
     }
 
 private:
