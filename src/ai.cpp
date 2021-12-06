@@ -14,7 +14,7 @@ Point Ai::update() {
 
     auto head = _obstacleCanvas.snakeHeadPos;
 
-    explore(head);
+    search(_obstacleCanvas.applePos, head, _searchCanvas);
 
     Point pos = _obstacleCanvas.applePos;
     for (SearchCanvasCell cell; cell = _searchCanvas.at(pos), cell.explored;
@@ -65,9 +65,10 @@ void Ai::draw(sdl::RendererView renderer) {
     }
 }
 
-void Ai::explore(Point from) {
+void Ai::search(Point to, Point from, SearchCanvas &searchCanvas) {
     auto e = [&](Point to, Point from) {
-        auto res = _searchCanvas.exploreCell(to, from, _obstacleCanvas);
+        auto res = searchCanvas.exploreCell(
+            to, from, _obstacleCanvas.applePos, _obstacleCanvas);
         if (res == SearchCanvas::Explored) {
             _edges.push_back(to);
         }
@@ -77,7 +78,6 @@ void Ai::explore(Point from) {
 
     _edges.clear();
     _edges.push_back(from);
-    //    _searchCanvas.set(from, {true, {}});
 
     for (int current = 0; current < _edges.size(); ++current) {
         auto p = _edges.at(current);

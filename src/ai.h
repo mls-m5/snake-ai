@@ -17,7 +17,7 @@ struct Ai {
     void draw(sdl::RendererView renderer);
 
 private:
-    void explore(Point from);
+    void search(Point to, Point from, SearchCanvas &searchCanvas);
     Snake &_snake;
     const ObstacleCanvas &_obstacleCanvas;
     const Settings &_settings;

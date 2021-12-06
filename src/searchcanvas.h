@@ -20,17 +20,26 @@ struct SearchCanvas : public Canvas<SearchCanvasCell> {
 
     ExploreResult exploreCell(Point to,
                               Point from,
+                              Point target,
                               const ObstacleCanvas obstacleCanvas) {
+        if (to.x == target.x && to.y == target.y) {
+            set(to,
+                SearchCanvasCell{
+                    true,
+                    from,
+                });
+
+            return Apple;
+        }
         if (isInside(to) && !at(to).explored) {
             auto obstacle = obstacleCanvas.at(to);
-            if (obstacle == ObstacleCanvas::Apple ||
-                obstacle == ObstacleCanvas::None) {
+            if (obstacle == ObstacleCanvas::None) {
                 set(to,
                     SearchCanvasCell{
                         true,
                         from,
                     });
-                return obstacle == ObstacleCanvas::Apple ? Apple : Explored;
+                return Explored;
             }
         }
         return Failed;
