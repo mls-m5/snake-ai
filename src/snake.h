@@ -65,6 +65,11 @@ struct Snake {
         return _isDead;
     }
 
+    std::list<Point> segments() const {
+        return _segments;
+    }
+
+private:
     ObstacleCanvas &_canvas;
     std::list<Point> _segments;
 

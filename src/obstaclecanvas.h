@@ -36,6 +36,8 @@ struct ObstacleCanvas : public Canvas<int> {
             }
         }
     }
+
+    void putApple();
 };
 
 } // namespace snake

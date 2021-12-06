@@ -64,6 +64,8 @@ int main(int argc, char **argv) {
 
     auto canvas = ObstacleCanvas{};
     auto snake = Snake{canvas};
+
+    canvas.putApple();
     auto ai = Ai{snake, canvas};
 
     for (; !snake.isDead();) {

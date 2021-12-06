@@ -30,6 +30,14 @@ struct Canvas {
         return p.x >= 0 && p.y >= 0 && p.x < width && p.y < height;
     }
 
+    auto &data() const {
+        return _data;
+    }
+
+    Point pointFromIndex(size_t index) {
+        return {index % width, index / width};
+    }
+
 private:
     std::array<Type, width *height> _data = {};
 };
