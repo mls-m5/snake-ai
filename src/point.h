@@ -40,9 +40,20 @@ struct BasicPoint {
     }
 
     template <typename Other>
+    constexpr BasicPoint operator-(Other other) {
+        return {x - other.x, y - other.y};
+    }
+
+    template <typename Other>
     constexpr BasicPoint &operator=(Other other) {
         x = other.x;
         y = other.y;
+        return *this;
+    }
+
+    template <typename Other>
+    constexpr bool operator=(Other other) const {
+        return x == other.x && y == other.y;
     }
 
     operator bool() const {
@@ -66,5 +77,7 @@ struct BasicPoint {
     }
 };
 
-using Point = BasicPoint<int>;
+using Point = BasicPoint<int8_t>;
 using SmallPoint = BasicPoint<int8_t>;
+// using Point = BasicPoint<int>;
+// using SmallPoint = BasicPoint<int8_t>;

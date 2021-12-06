@@ -15,6 +15,13 @@ Point Ai::update() {
 
     explore(head);
 
+    Point pos = _obstacleCanvas.applePos;
+    for (SearchCanvasCell cell; cell = _searchCanvas.at(pos), cell.parent;
+         pos = cell.parent) {
+        if (cell.parent.x == head.x && cell.parent.y == head.y) {
+            return pos - head;
+        }
+    }
     return {0, 0};
 }
 

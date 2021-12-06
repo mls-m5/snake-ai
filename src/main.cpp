@@ -76,7 +76,7 @@ int main(int argc, char **argv) {
         DryrunAi,
     };
 
-    auto mode = DryrunAi;
+    auto mode = Ai;
 
     for (; !snake.isDead();) {
         control = [&ai, mode] {
@@ -91,8 +91,8 @@ int main(int argc, char **argv) {
                 ai.update();
                 return getControl();
             } break;
-                return Point{};
             }
+            return Point{};
         }();
 
         if (mode != Ai) {
@@ -114,6 +114,8 @@ int main(int argc, char **argv) {
 
         std::this_thread::sleep_for(100ms);
     }
+
+    std::this_thread::sleep_for(1000ms);
 
     return 0;
 }
