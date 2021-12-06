@@ -16,7 +16,7 @@ Point Ai::update() {
     explore(head);
 
     Point pos = _obstacleCanvas.applePos;
-    for (SearchCanvasCell cell; cell = _searchCanvas.at(pos), cell.parent;
+    for (SearchCanvasCell cell; cell = _searchCanvas.at(pos), cell.explored;
          pos = cell.parent) {
         if (cell.parent.x == head.x && cell.parent.y == head.y) {
             return pos - head;
@@ -54,7 +54,7 @@ void Ai::draw(sdl::RendererView renderer) {
     // Draw the real path to apple
     renderer.drawColor({255, 255, 255, 255});
     Point pos = _obstacleCanvas.applePos;
-    for (SearchCanvasCell cell; cell = _searchCanvas.at(pos), cell.parent;
+    for (SearchCanvasCell cell; cell = _searchCanvas.at(pos), cell.explored;
          pos = cell.parent) {
         drawLine(pos, cell.parent);
     }
@@ -72,6 +72,7 @@ void Ai::explore(Point from) {
 
     _edges.clear();
     _edges.push_back(from);
+    //    _searchCanvas.set(from, {true, {}});
 
     for (int current = 0; current < _edges.size(); ++current) {
         auto p = _edges.at(current);

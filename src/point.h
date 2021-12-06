@@ -56,9 +56,9 @@ struct BasicPoint {
         return x == other.x && y == other.y;
     }
 
-    operator bool() const {
-        return x && y;
-    }
+    //    operator bool() const {
+    //        return x && y;
+    //    }
 
     static constexpr BasicPoint Up() {
         return {0, -1};

@@ -8,7 +8,7 @@ namespace snake {
 struct Snake {
     Snake(ObstacleCanvas &canvas)
         : _canvas{canvas} {
-        auto start = Point{canvas.width / 2, canvas.height / 2};
+        auto start = Point{canvas.width / 2 * 0, canvas.height / 2};
         for (int i = 0; i < _len; ++i) {
             auto p = Point{start.x, start.y + _len - i};
             canvas.set(p.x, p.y, 1);
