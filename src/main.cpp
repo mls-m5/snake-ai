@@ -68,18 +68,35 @@ int main(int argc, char **argv) {
     canvas.putApple();
     auto ai = Ai{snake, canvas};
 
+    Point control;
+
+    enum ControlModes {
+        Human,
+        Ai,
+        DryrunAi,
+    };
+
+    auto mode = DryrunAi;
+
     for (; !snake.isDead();) {
-        switch (2) {
-        case 0:
-            snake.update(getControl());
-            break;
-        case 1:
-            snake.update(ai.update());
-            break;
-        case 2: { // Update ai but let human do the moving
-            ai.update();
-            snake.update(getControl());
-        } break;
+        control = [&ai, mode] {
+            switch (mode) {
+            case Human:
+                return getControl();
+                break;
+            case Ai:
+                return ai.update();
+                break;
+            case DryrunAi: { // Update ai but let human do the moving
+                ai.update();
+                return getControl();
+            } break;
+                return Point{};
+            }
+        }();
+
+        if (mode != Ai) {
+            snake.update(control);
         }
 
         renderer.drawColor({10, 0, 0, 255});
@@ -90,6 +107,10 @@ int main(int argc, char **argv) {
         ai.draw(renderer);
 
         renderer.present();
+
+        if (mode == Ai) {
+            snake.update(control);
+        }
 
         std::this_thread::sleep_for(100ms);
     }

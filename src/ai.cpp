@@ -4,17 +4,16 @@ namespace snake {
 
 Ai::Ai(Snake &snake, const ObstacleCanvas &canvas)
     : _snake{snake}
-    , _obstacleCanvas{canvas} {}
+    , _obstacleCanvas{canvas} {
+    _edges.reserve(_obstacleCanvas.data().size());
+}
 
 Point Ai::update() {
     _searchCanvas.clear();
 
     auto head = _obstacleCanvas.snakeHeadPos;
 
-    _searchCanvas.explore(head + head.Up(), head);
-    _searchCanvas.explore(head + head.Down(), head);
-    _searchCanvas.explore(head + head.Left(), head);
-    _searchCanvas.explore(head + head.Right(), head);
+    explore(head);
 
     return {0, 0};
 }
@@ -27,7 +26,7 @@ void Ai::draw(sdl::RendererView renderer) {
 
     for (int y = 0; y < _searchCanvas.height; ++y) {
         for (int x = 0; x < _searchCanvas.width; ++x) {
-            auto cell = _searchCanvas.get(x, y);
+            auto cell = _searchCanvas.at(x, y);
             if (cell.explored) {
                 auto parent = cell.parent;
                 renderer.drawLine(x * cellSize + offset,
@@ -35,6 +34,35 @@ void Ai::draw(sdl::RendererView renderer) {
                                   parent.x * cellSize + offset,
                                   parent.y * cellSize + offset);
             }
+        }
+    }
+}
+
+void Ai::explore(Point from) {
+    auto e = [&](Point to, Point from) {
+        auto res = _searchCanvas.exploreCell(to, from, _obstacleCanvas);
+        if (res == SearchCanvas::Explored) {
+            _edges.push_back(to);
+        }
+
+        return res == SearchCanvas::Apple;
+    };
+
+    _edges.clear();
+    _edges.push_back(from);
+
+    for (int current = 0; current < _edges.size(); ++current) {
+        auto p = _edges.at(current);
+
+        bool res = 0;
+
+        res |= e(p + Point::Up(), p);
+        res |= e(p + Point::Down(), p);
+        res |= e(p + Point::Left(), p);
+        res |= e(p + Point::Right(), p);
+
+        if (res) {
+            break;
         }
     }
 }

@@ -15,7 +15,7 @@ void ObstacleCanvas::draw(sdl::RendererView renderer) {
 
     for (int y = 0; y < height; ++y) {
         for (int x = 0; x < width; ++x) {
-            auto d = get(x, y);
+            auto d = at(x, y);
             if (d) {
                 if (d == 1) {
                     renderer.drawColor({100, 100, 100, 255});

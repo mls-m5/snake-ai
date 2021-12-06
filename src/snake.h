@@ -25,7 +25,7 @@ struct Snake {
         auto head = _segments.back();
 
         if (auto t = head + requestedDirection;
-            _canvas.isInside(t) && _canvas.get(t) != ObstacleCanvas::Snake) {
+            _canvas.isInside(t) && _canvas.at(t) != ObstacleCanvas::Snake) {
             _direction = requestedDirection;
         }
 
@@ -36,12 +36,12 @@ struct Snake {
             return;
         }
 
-        if (_canvas.get(head) == ObstacleCanvas::Apple) {
+        if (_canvas.at(head) == ObstacleCanvas::Apple) {
             _len += 1;
             _canvas.putApple();
         }
 
-        if (_canvas.get(head) == ObstacleCanvas::Snake) {
+        if (_canvas.at(head) == ObstacleCanvas::Snake) {
             _isDead = true;
             return;
         }

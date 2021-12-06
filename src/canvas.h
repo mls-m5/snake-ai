@@ -10,12 +10,12 @@ struct Canvas {
     static constexpr int width = 32;
     static constexpr int height = 32;
 
-    auto get(int x, int y) const {
+    auto at(int x, int y) const {
         return _data.at(y * width + x);
     }
 
-    auto get(Point p) const {
-        return get(p.x, p.y);
+    auto at(Point p) const {
+        return at(p.x, p.y);
     }
 
     void set(int x, int y, Type value) {

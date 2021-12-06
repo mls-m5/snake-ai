@@ -11,6 +11,7 @@ struct ObstacleCanvas : public Canvas<int> {
     const int cellSize = 10;
 
     enum Content {
+        None = 0,
         Snake = 1,
         Apple = 2,
     };
