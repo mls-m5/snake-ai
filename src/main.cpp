@@ -118,7 +118,7 @@ int main(int argc, char **argv) {
     }
 
     if (settings.msDelay) {
-        std::this_thread::sleep_for(1000ms);
+        std::this_thread::sleep_for(5000ms);
     }
 
     return 0;

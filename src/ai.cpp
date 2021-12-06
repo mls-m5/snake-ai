@@ -16,12 +16,6 @@ Point Ai::update() {
 
     auto head = _obstacleCanvas.snakeHeadPos;
 
-    if (!search(_obstacleCanvas.applePos, head, _searchCanvas)) {
-        return {0, 0};
-    }
-
-    _returnSearchCanvas.clear();
-
     Point control = {0, 0};
 
     auto backtrack = [&](Point pos) {
@@ -37,22 +31,22 @@ Point Ai::update() {
         }
     };
 
-    backtrack(_obstacleCanvas.applePos);
-
-    if (!search(_snake.segments().front(),
-                _obstacleCanvas.applePos,
-                _returnSearchCanvas)) {
-        bailout = true;
-    }
-
-    _lastSearchTime = std::chrono::high_resolution_clock::now() - start;
-
-    if (bailout) {
-        _searchCanvas.clear();
+    if (search(_obstacleCanvas.applePos, head, _searchCanvas)) {
         _returnSearchCanvas.clear();
-        search(
-            _snake.segments().back(), _snake.segments().front(), _searchCanvas);
+
+        if (search(_snake.segments().front(),
+                   _obstacleCanvas.applePos,
+                   _returnSearchCanvas)) {
+            backtrack(_obstacleCanvas.applePos);
+            return control;
+        }
     }
+
+    // Could not find a way to safely eat apple
+    _searchCanvas.clear();
+    _returnSearchCanvas.clear();
+    search(_snake.segments().back(), _snake.segments().front(), _searchCanvas);
+    backtrack(_snake.segments().front());
 
     return control;
 }
