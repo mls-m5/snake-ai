@@ -12,7 +12,7 @@ Point Ai::update() {
     auto start = std::chrono::high_resolution_clock::now();
 
     _tailDelay.push_back(_snake.tail());
-    while (_tailDelay.size() > 4) {
+    while (_tailDelay.size() > 6) {
         _tailDelay.erase(_tailDelay.begin());
     }
 
@@ -26,7 +26,6 @@ Point Ai::update() {
     auto backtrack = [&](Point pos) {
         for (SearchCanvasCell cell; cell = _searchCanvas.at(pos), cell.explored;
              pos = cell.parent) {
-            _returnSearchCanvas.set(pos, cell);
             if (cell.parent.x == head.x && cell.parent.y == head.y) {
                 _lastSearchTime =
                     std::chrono::high_resolution_clock::now() - start;
@@ -37,33 +36,45 @@ Point Ai::update() {
         std::cout << "backtracking failed" << std::endl;
     };
 
-    auto blockTailSearch =
-        // Make sure no searching is done directly behind the tail
-        [this]() {
-            //            if (_tailDelay.empty()) {
-            //                return;
-            //            }
-            //            auto end = std::prev(_tailDelay.end());
-            //            for (auto it = _tailDelay.begin(); it != end; ++it) {
-            //                auto t = *it;
-            //                _searchCanvas.set(t, {true});
-            //                _returnSearchCanvas.set(t, {true});
-            //            }
-            for (auto t : _tailDelay) {
-                _searchCanvas.set(t, {true});
-                _returnSearchCanvas.set(t, {true});
+    auto backtrackBlock =
+        [&head](Point pos, SearchCanvas &from, SearchCanvas &to) {
+            for (SearchCanvasCell cell; cell = from.at(pos), cell.explored;
+                 pos = cell.parent) {
+                to.set(pos, cell);
+                if (cell.parent.x == head.x && cell.parent.y == head.y) {
+                    break;
+                }
             }
         };
 
+    auto blockTailSearch =
+        // Make sure no searching is done directly behind the tail
+        [this](SearchCanvas &canvas) {
+            if (_tailDelay.empty()) {
+                return;
+            }
+            auto end = std::prev(_tailDelay.end());
+            for (auto it = _tailDelay.begin(); it != end; ++it) {
+                auto t = *it;
+                canvas.set(t, {true});
+            }
+            //            for (auto t : _tailDelay) {
+            //                canvas.set(t, {true});
+            //            }
+        };
+
     _searchCanvas.clear();
-    blockTailSearch();
+    blockTailSearch(_searchCanvas);
 
     if (search(_obstacleCanvas.applePos, head, _searchCanvas, true)) {
         _returnSearchCanvas.clear();
 
-        blockTailSearch();
+        blockTailSearch(_returnSearchCanvas);
+        backtrackBlock(
+            _obstacleCanvas.applePos, _searchCanvas, _returnSearchCanvas);
 
-        if (search(_snake.tail(),
+        if (search(tail,
+                   //        if (search(_snake.tail(),
                    _obstacleCanvas.applePos,
                    _returnSearchCanvas,
                    true)) {
@@ -73,14 +84,17 @@ Point Ai::update() {
     }
 
     _searchCanvas.clear();
-    blockTailSearch();
+    blockTailSearch(_searchCanvas);
     // Try again but start searching horizontally
     if (search(_obstacleCanvas.applePos, head, _searchCanvas, false)) {
         _returnSearchCanvas.clear();
 
-        blockTailSearch();
+        blockTailSearch(_returnSearchCanvas);
+        backtrackBlock(
+            _obstacleCanvas.applePos, _searchCanvas, _returnSearchCanvas);
 
-        if (search(_snake.tail(),
+        if (search(tail,
+                   //        if (search(_snake.tail(),
                    _obstacleCanvas.applePos,
                    _returnSearchCanvas,
                    true)) {
@@ -93,13 +107,21 @@ Point Ai::update() {
     _searchCanvas.clear();
     _returnSearchCanvas.clear();
 
-    blockTailSearch();
+    blockTailSearch(_searchCanvas);
 
     if (search(tail, _snake.head(), _searchCanvas, true)) {
         backtrack(tail);
+        return control;
     }
 
-    return control;
+    _searchCanvas.clear();
+    // Backup
+    if (search(_snake.tail(), _snake.head(), _searchCanvas, true)) {
+        backtrack(_snake.tail());
+        return control;
+    }
+
+    return {0, 0};
 }
 
 bool Ai::search(Point to,

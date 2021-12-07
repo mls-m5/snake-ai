@@ -8,7 +8,6 @@
 namespace snake {
 
 struct ObstacleCanvas : public Canvas<int> {
-    const int cellSize = 10;
 
     enum Content {
         None = 0,

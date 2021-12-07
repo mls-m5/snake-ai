@@ -39,6 +39,10 @@ struct Ai {
         return _tailDelay.front();
     }
 
+    auto &tailDelay() const {
+        return _tailDelay;
+    }
+
 private:
     bool search(Point to,
                 Point from,

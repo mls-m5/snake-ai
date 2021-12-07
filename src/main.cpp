@@ -106,8 +106,10 @@ int main(int argc, char **argv) {
         }
 
         if (!settings.hideGui) {
+            renderer.beginDraw();
             renderer.draw(canvas);
             renderer.draw(ai);
+            renderer.draw(snake);
             renderer.finishDraw();
         }
 

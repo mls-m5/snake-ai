@@ -78,7 +78,7 @@ struct Snake {
         return _isDead;
     }
 
-    std::list<Point> segments() const {
+    const std::list<Point> &segments() const {
         return _segments;
     }
 
@@ -90,11 +90,11 @@ struct Snake {
         return _len;
     }
 
-    Point tail() {
+    Point tail() const {
         return _segments.front();
     }
 
-    Point head() {
+    Point head() const {
         return _segments.back();
     }
 

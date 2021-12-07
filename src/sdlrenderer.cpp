@@ -39,7 +39,6 @@ void SdlRenderer::finishDraw() {
 void SdlRenderer::draw(const ObstacleCanvas &canvas) {
     const auto width = canvas.width;
     const auto height = canvas.height;
-    const auto cellSize = canvas.cellSize;
 
     renderer.drawColor({0, 20, 0, 255});
     renderer.fillRect({0, 0, width * cellSize, height * cellSize});
@@ -61,10 +60,39 @@ void SdlRenderer::draw(const ObstacleCanvas &canvas) {
     }
 }
 
+void SdlRenderer::draw(const Snake &snake) {
+    auto offset = cellSize / 2;
+    renderer.drawColor(0, 100, 0);
+
+    auto head = snake.head();
+    renderer.fillRect(
+        {head.x * cellSize, head.y * cellSize, cellSize, cellSize});
+
+    renderer.drawColor(0, 0, 0);
+
+    auto drawLine = [&](Point from, Point to) {
+        renderer.drawLine(from.x * cellSize + offset,
+                          from.y * cellSize + offset,
+                          to.x * cellSize + offset,
+                          to.y * cellSize + offset);
+    };
+
+    auto prev = snake.segments().front();
+    auto begin = std::next(snake.segments().begin());
+    for (auto it = begin; it != snake.segments().end(); ++it) {
+        drawLine(*it, prev);
+        prev = *it;
+    }
+}
+
 void SdlRenderer::draw(const Ai &ai) {
     loopPrevention.clear();
-    const auto cellSize = ai.obstacleCanvas().cellSize;
     auto offset = cellSize / 2;
+
+    renderer.drawColor({80, 80, 80, 255});
+    for (auto t : ai.tailDelay()) {
+        renderer.fillRect({t.x * cellSize, t.y * cellSize, cellSize, cellSize});
+    }
 
     renderer.drawColor({100, 100, 100, 255});
 
@@ -76,8 +104,8 @@ void SdlRenderer::draw(const Ai &ai) {
     };
 
     if (settings.shouldShowSearch) {
-        draw(ai.searchCanvas(), cellSize);
-        draw(ai.returnSearchCanvas(), cellSize, 1);
+        draw(ai.searchCanvas(), 0);
+        draw(ai.returnSearchCanvas(), 1);
     }
 
     if (settings.shouldShowPath) {
@@ -87,12 +115,6 @@ void SdlRenderer::draw(const Ai &ai) {
 
         auto backtrackDraw = [&](Point pos, const SearchCanvas &searchCanvas) {
             renderer.drawColor({255, 255, 255, 255});
-            //            SearchCanvasCell cell = searchCanvas.at(pos);
-            //            while (searchCanvas.isInside(cell.parent)) {
-            //                drawLine(pos, cell.parent);
-            //                pos = cell.parent;
-            //                cell = searchCanvas.at(cell.parent);
-            //            }
             for (SearchCanvasCell cell;
                  cell = searchCanvas.at(pos), cell.isRenderable();
                  pos = cell.parent) {
@@ -109,9 +131,7 @@ void SdlRenderer::draw(const Ai &ai) {
     }
 }
 
-void SdlRenderer::draw(const SearchCanvas &canvas,
-                       int cellSize,
-                       int duplicationOffset) {
+void SdlRenderer::draw(const SearchCanvas &canvas, int duplicationOffset) {
     const auto offset = cellSize / 2 + duplicationOffset;
     for (int y = 0; y < canvas.height; ++y) {
         for (int x = 0; x < canvas.width; ++x) {

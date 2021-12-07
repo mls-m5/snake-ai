@@ -17,6 +17,10 @@ struct SearchCanvasCell {
     bool isFree() const {
         return !explored;
     }
+
+    bool isBlocked() const {
+        return explored && parent.x == -1;
+    }
 };
 
 struct SearchCanvas : public Canvas<SearchCanvasCell> {
@@ -30,24 +34,28 @@ struct SearchCanvas : public Canvas<SearchCanvasCell> {
                               Point from,
                               Point target,
                               const ObstacleCanvas obstacleCanvas) {
-        if (to.x == target.x && to.y == target.y) {
-            set(to,
-                SearchCanvasCell{
-                    true,
-                    from,
-                });
-
-            return Apple;
-        }
-        if (isInside(to) && !at(to).explored) {
+        if (isInside(to)) {
             auto obstacle = obstacleCanvas.at(to);
-            if (obstacle == ObstacleCanvas::None) {
+            if (!(obstacle == ObstacleCanvas::Apple && at(to).isBlocked()) &&
+                (to.x == target.x && to.y == target.y)) {
                 set(to,
                     SearchCanvasCell{
                         true,
                         from,
                     });
-                return Explored;
+
+                return Apple;
+            }
+            if (!at(to).explored) {
+
+                if (obstacle == ObstacleCanvas::None) {
+                    set(to,
+                        SearchCanvasCell{
+                            true,
+                            from,
+                        });
+                    return Explored;
+                }
             }
         }
         return Failed;

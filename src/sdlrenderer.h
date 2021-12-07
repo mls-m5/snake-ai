@@ -10,6 +10,7 @@ struct ObstacleCanvas;
 struct Ai;
 struct Settings;
 struct SearchCanvas;
+struct Snake;
 
 struct SdlRenderer {
     SdlRenderer(const Settings &settings);
@@ -20,8 +21,9 @@ struct SdlRenderer {
     void finishDraw();
 
     void draw(const ObstacleCanvas &);
+    void draw(const Snake &);
     void draw(const Ai &);
-    void draw(const SearchCanvas &, int cellSize, int offset = 0);
+    void draw(const SearchCanvas &, int offset = 0);
 
     sdl::Window window;
     sdl::Renderer renderer;
@@ -29,6 +31,7 @@ struct SdlRenderer {
     const Settings &settings;
 
     Canvas<bool> loopPrevention;
+    const int cellSize = 10;
 };
 
 } // namespace snake
