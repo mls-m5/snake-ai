@@ -35,6 +35,10 @@ struct Ai {
         return _snake;
     }
 
+    auto trackedTail() const {
+        return _tailDelay.front();
+    }
+
 private:
     bool search(Point to, Point from, SearchCanvas &searchCanvas);
 
@@ -44,6 +48,7 @@ private:
     SearchCanvas _returnSearchCanvas;
     std::vector<Point> _edges;
     std::chrono::high_resolution_clock::duration _lastSearchTime = {};
+    std::list<Point> _tailDelay;
 };
 
 } // namespace snake

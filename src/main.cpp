@@ -6,6 +6,7 @@
 #include "sdlpp/events.hpp"
 #include "sdlrenderer.h"
 #include "snake.h"
+#include "terminalrenderer.h"
 #include <iostream>
 #include <thread>
 
@@ -118,6 +119,11 @@ int main(int argc, char **argv) {
             std::this_thread::sleep_for(1ms * settings.msDelay);
         }
     }
+
+    auto terminalRenderer = TerminalRenderer{settings};
+    terminalRenderer.beginDraw();
+    terminalRenderer.draw(canvas);
+    terminalRenderer.finishDraw();
 
     if (!settings.hideGui && settings.msDelay) {
         for (int i = 0; i < 1000; ++i) {

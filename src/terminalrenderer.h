@@ -1,8 +1,7 @@
 #pragma once
 
 #include "canvas.h"
-#include "sdlpp/render.hpp"
-#include "sdlpp/window.hpp"
+#include "settings.h"
 
 namespace snake {
 
@@ -11,8 +10,8 @@ struct Ai;
 struct Settings;
 struct SearchCanvas;
 
-struct SdlRenderer {
-    SdlRenderer(const Settings &settings);
+struct TerminalRenderer {
+    TerminalRenderer(const Settings &settings);
 
     void color(int r, int g, int b);
 
@@ -23,12 +22,9 @@ struct SdlRenderer {
     void draw(const Ai &);
     void draw(const SearchCanvas &, int cellSize, int offset = 0);
 
-    sdl::Window window;
-    sdl::Renderer renderer;
-
     const Settings &settings;
 
-    Canvas<bool> loopPrevention;
+    //    Canvas<bool> loopPrevention;
 };
 
 } // namespace snake

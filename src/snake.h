@@ -57,7 +57,7 @@ struct Snake {
 
         if (_segments.size() > _len) {
             _canvas.set(_segments.front(), 0);
-            _segments.erase(_segments.begin(), std::next(_segments.begin()));
+            _segments.erase(_segments.begin());
         }
     }
 

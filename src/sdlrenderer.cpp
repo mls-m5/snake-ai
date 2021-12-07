@@ -62,6 +62,7 @@ void SdlRenderer::draw(const ObstacleCanvas &canvas) {
 }
 
 void SdlRenderer::draw(const Ai &ai) {
+    loopPrevention.clear();
     const auto cellSize = ai.obstacleCanvas().cellSize;
     auto offset = cellSize / 2;
 
@@ -86,15 +87,25 @@ void SdlRenderer::draw(const Ai &ai) {
 
         auto backtrackDraw = [&](Point pos, const SearchCanvas &searchCanvas) {
             renderer.drawColor({255, 255, 255, 255});
+            //            SearchCanvasCell cell = searchCanvas.at(pos);
+            //            while (searchCanvas.isInside(cell.parent)) {
+            //                drawLine(pos, cell.parent);
+            //                pos = cell.parent;
+            //                cell = searchCanvas.at(cell.parent);
+            //            }
             for (SearchCanvasCell cell;
-                 cell = searchCanvas.at(pos), cell.explored;
+                 cell = searchCanvas.at(pos), cell.isRenderable();
                  pos = cell.parent) {
+                if (loopPrevention.at(pos)) {
+                    break;
+                }
+                loopPrevention.set(pos, true);
                 drawLine(pos, cell.parent);
             }
         };
-        //        Point pos = ai.obstacleCanvas().applePos;
-        backtrackDraw(ai.obstacleCanvas().applePos, ai.searchCanvas());
-        backtrackDraw(ai.snake().tail(), ai.returnSearchCanvas());
+        //        backtrackDraw(ai.obstacleCanvas().applePos,
+        //        ai.searchCanvas());
+        backtrackDraw(ai.trackedTail(), ai.returnSearchCanvas());
     }
 }
 
@@ -105,7 +116,7 @@ void SdlRenderer::draw(const SearchCanvas &canvas,
     for (int y = 0; y < canvas.height; ++y) {
         for (int x = 0; x < canvas.width; ++x) {
             auto cell = canvas.at(x, y);
-            if (cell.explored) {
+            if (cell.isRenderable()) {
                 auto parent = cell.parent;
                 renderer.drawLine(x * cellSize + offset,
                                   y * cellSize + offset,

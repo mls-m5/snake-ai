@@ -10,11 +10,16 @@ Ai::Ai(Snake &snake, const ObstacleCanvas &canvas, const Settings &settings)
 
 Point Ai::update() {
     auto start = std::chrono::high_resolution_clock::now();
-    _searchCanvas.clear();
+
+    _tailDelay.push_back(_snake.tail());
+    while (_tailDelay.size() > 4) {
+        _tailDelay.erase(_tailDelay.begin());
+    }
 
     bool bailout = false;
 
-    auto head = _obstacleCanvas.snakeHeadPos;
+    auto head = _snake.head();
+    auto tail = _tailDelay.front();
 
     Point control = {0, 0};
 
@@ -26,27 +31,42 @@ Point Ai::update() {
                 _lastSearchTime =
                     std::chrono::high_resolution_clock::now() - start;
                 control = pos - head;
-                break;
+                return;
             }
         }
+        std::cout << "backtracking failed" << std::endl;
     };
+
+    auto blockTailSearch =
+        // Make sure no searching is done directly behind the tail
+        [this]() {
+            for (auto t : _tailDelay) {
+                _searchCanvas.set(t, {true});
+                _returnSearchCanvas.set(t, {true});
+            }
+        };
+
+    _searchCanvas.clear();
+    blockTailSearch();
 
     if (search(_obstacleCanvas.applePos, head, _searchCanvas)) {
         _returnSearchCanvas.clear();
 
-        if (search(_snake.segments().front(),
-                   _obstacleCanvas.applePos,
-                   _returnSearchCanvas)) {
+        blockTailSearch();
+
+        if (search(tail, _obstacleCanvas.applePos, _returnSearchCanvas)) {
             backtrack(_obstacleCanvas.applePos);
             return control;
         }
     }
 
-    // Could not find a way to safely eat apple, instead focus on following tail
     _searchCanvas.clear();
     _returnSearchCanvas.clear();
-    search(_snake.tail(), _snake.head(), _searchCanvas);
-    backtrack(_snake.segments().front());
+
+    blockTailSearch();
+
+    search(tail, _snake.head(), _searchCanvas);
+    backtrack(tail);
 
     return control;
 }

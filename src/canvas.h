@@ -26,7 +26,7 @@ struct Canvas {
         set(p.x, p.y, value);
     }
 
-    bool isInside(Point p) {
+    bool isInside(Point p) const {
         return p.x >= 0 && p.y >= 0 && p.x < width && p.y < height;
     }
 

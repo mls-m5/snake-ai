@@ -8,7 +8,15 @@ namespace snake {
 
 struct SearchCanvasCell {
     bool explored = false;
-    SmallPoint parent;
+    SmallPoint parent = {-1, -1};
+
+    bool isRenderable() const {
+        return explored && parent.x != -1;
+    }
+
+    bool isFree() const {
+        return !explored;
+    }
 };
 
 struct SearchCanvas : public Canvas<SearchCanvasCell> {
