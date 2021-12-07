@@ -40,7 +40,10 @@ struct Ai {
     }
 
 private:
-    bool search(Point to, Point from, SearchCanvas &searchCanvas);
+    bool search(Point to,
+                Point from,
+                SearchCanvas &searchCanvas,
+                bool verticalFirst);
 
     Snake &_snake;
     const ObstacleCanvas &_obstacleCanvas;
