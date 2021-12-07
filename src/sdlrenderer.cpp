@@ -91,7 +91,8 @@ void SdlRenderer::draw(const Ai &ai) {
 
     renderer.drawColor({80, 80, 80, 255});
     for (auto t : ai.tailDelay()) {
-        renderer.fillRect({t.x * cellSize, t.y * cellSize, cellSize, cellSize});
+        renderer.fillRect(
+            {t.x * cellSize, t.y * cellSize, cellSize / 2, cellSize / 2});
     }
 
     renderer.drawColor({100, 100, 100, 255});
