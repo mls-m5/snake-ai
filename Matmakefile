@@ -6,7 +6,8 @@ main
   src =
     src/*.cpp
   command = [exe]
-  ldflags = -lSDL2 -lSDL2_image
+  !em:ldflags = -lSDL2 -lSDL2_image
+  em:ldflags = -s USE_SDL=2
 
 all
   in = @main

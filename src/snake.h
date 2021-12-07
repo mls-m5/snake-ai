@@ -10,10 +10,14 @@ struct Snake {
     Snake(ObstacleCanvas &canvas, int startLen = 10)
         : _canvas{canvas}
         , _len{startLen} {
-        auto start = Point{canvas.width / 2, canvas.height / 2};
+        auto start = Point{
+            static_cast<Point::TypeT>(canvas.width / 2),
+            static_cast<Point::TypeT>(canvas.height / 2),
+        };
         auto len = std::min(_len, canvas.height / 2 - 1);
         for (int i = 0; i < len; ++i) {
-            auto p = Point{start.x, start.y + len - i};
+            auto p =
+                Point{start.x, static_cast<Point::TypeT>(start.y + len - i)};
             canvas.set(p.x, p.y, 1);
             _segments.push_back(p);
             canvas.snakeHeadPos = p;

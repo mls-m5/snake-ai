@@ -9,6 +9,7 @@ template <typename Type>
 struct Canvas {
     static constexpr int width = 32;
     static constexpr int height = 32;
+    using TypeT = Type;
 
     auto at(int x, int y) const {
         return _data.at(y * width + x);
@@ -35,8 +36,8 @@ struct Canvas {
     }
 
     Point pointFromIndex(size_t index) {
-        return {static_cast<int>(index % width),
-                static_cast<int>(index / width)};
+        return {static_cast<Point::TypeT>(index % width),
+                static_cast<Point::TypeT>(index / width)};
     }
 
     void fill(Type value) {

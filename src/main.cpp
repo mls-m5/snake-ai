@@ -69,7 +69,7 @@ int main(int argc, char **argv) {
             .steps = steps,
             .apples = numApples,
             .length = snake.len(),
-            .searchTimeMs = ai.lastSearchTime().count(),
+            .searchTimeMs = static_cast<long>(ai.lastSearchTime().count()),
         });
     });
 

@@ -6,6 +6,7 @@ template <typename Type>
 struct BasicPoint {
     Type x = 0;
     Type y = 0;
+    using TypeT = Type;
 
     BasicPoint() = default;
 
@@ -36,12 +37,18 @@ struct BasicPoint {
 
     template <typename Other>
     constexpr BasicPoint operator+(Other other) {
-        return {x + other.x, y + other.y};
+        return {
+            static_cast<BasicPoint::TypeT>(x + other.x),
+            static_cast<BasicPoint::TypeT>(y + other.y),
+        };
     }
 
     template <typename Other>
     constexpr BasicPoint operator-(Other other) {
-        return {x - other.x, y - other.y};
+        return {
+            static_cast<BasicPoint::TypeT>(x - other.x),
+            static_cast<BasicPoint::TypeT>(y - other.y),
+        };
     }
 
     template <typename Other>
