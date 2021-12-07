@@ -48,7 +48,8 @@ struct SearchCanvas : public Canvas<SearchCanvasCell> {
             }
             if (!at(to).explored) {
 
-                if (obstacle == ObstacleCanvas::None) {
+                if (obstacle == ObstacleCanvas::None ||
+                    obstacle == ObstacleCanvas::Apple) {
                     set(to,
                         SearchCanvasCell{
                             true,
