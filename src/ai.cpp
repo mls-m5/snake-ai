@@ -58,9 +58,6 @@ Point Ai::update() {
                 auto t = *it;
                 canvas.set(t, {true});
             }
-            //            for (auto t : _tailDelay) {
-            //                canvas.set(t, {true});
-            //            }
         };
 
     _searchCanvas.clear();

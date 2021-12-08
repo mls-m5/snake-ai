@@ -127,25 +127,13 @@ struct Main {
         if (mode == Mode::Ai) {
             snake.update(control);
         }
-
-        if (settings.msDelay) {
-            std::this_thread::sleep_for(1ms * settings.msDelay);
-        }
     }
 
     ~Main() {
-
         auto terminalRenderer = TerminalRenderer{settings};
         terminalRenderer.beginDraw();
         terminalRenderer.draw(canvas);
         terminalRenderer.finishDraw();
-
-        if (!settings.hideGui && settings.msDelay) {
-            for (int i = 0; i < 1000; ++i) {
-                getControl();
-                std::this_thread::sleep_for(100ms);
-            }
-        }
     }
 };
 
@@ -156,6 +144,16 @@ int main(int argc, char **argv) {
 
     for (; !main.snake.isDead();) {
         main.loop();
+        if (main.settings.msDelay) {
+            std::this_thread::sleep_for(1ms * main.settings.msDelay);
+        }
+    }
+
+    if (!main.settings.hideGui && main.settings.msDelay) {
+        for (int i = 0; i < 1000; ++i) {
+            getControl();
+            std::this_thread::sleep_for(100ms);
+        }
     }
 
     return 0;
@@ -174,8 +172,7 @@ void emLoop() {
 }
 
 int main(int argc, char **argv) {
-    //    emscripten_request_animation_frame_loop(emLoop, 0);
-    emscripten_set_main_loop(emLoop, 60, 0);
+    emscripten_set_main_loop(emLoop, 1000 / emMain.settings.msDelay, 0);
 
     return 0;
 }

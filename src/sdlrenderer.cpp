@@ -128,8 +128,7 @@ void SdlRenderer::draw(const Ai &ai) {
                 drawLine(pos, cell.parent);
             }
         };
-        //        backtrackDraw(ai.obstacleCanvas().applePos,
-        //        ai.searchCanvas());
+        backtrackDraw(ai.obstacleCanvas().applePos, ai.searchCanvas());
         backtrackDraw(ai.trackedTail(), ai.returnSearchCanvas());
     }
 }
