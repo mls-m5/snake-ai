@@ -19,6 +19,17 @@ Point Ai::update() {
     bool bailout = false;
 
     auto head = _snake.head();
+
+    for (auto it = _tailDelay.begin(); it != _tailDelay.end(); ++it) {
+        auto t = *it;
+
+        if (t.x == head.x && t.y == head.y) {
+            // The tail block should never be able to pass the head
+            // If it does, remove everything that is crossing
+            _tailDelay.erase(_tailDelay.begin(), ++it);
+            break;
+        }
+    }
     auto tail = _tailDelay.front();
 
     Point control = {0, 0};
@@ -50,12 +61,16 @@ Point Ai::update() {
     auto blockTailSearch =
         // Make sure no searching is done directly behind the tail
         [this](SearchCanvas &canvas) {
+            // So that the head never can be a target
+            auto head = _snake.head();
+            canvas.set(head, {true});
             if (_tailDelay.empty()) {
                 return;
             }
             auto end = std::prev(_tailDelay.end());
             for (auto it = _tailDelay.begin(); it != end; ++it) {
                 auto t = *it;
+
                 canvas.set(t, {true});
             }
         };
