@@ -90,9 +90,11 @@ void SdlRenderer::draw(const Ai &ai) {
     auto offset = cellSize / 2;
 
     renderer.drawColor({80, 80, 80, 255});
-    for (auto t : ai.tailDelay()) {
-        renderer.fillRect(
-            {t.x * cellSize, t.y * cellSize, cellSize / 2, cellSize / 2});
+    if (settings.shouldShowPath || settings.shouldShowSearch) {
+        for (auto t : ai.tailDelay()) {
+            renderer.fillRect(
+                {t.x * cellSize, t.y * cellSize, cellSize / 2, cellSize / 2});
+        }
     }
 
     renderer.drawColor({100, 100, 100, 255});

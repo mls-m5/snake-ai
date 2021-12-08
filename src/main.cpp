@@ -10,6 +10,11 @@
 #include <iostream>
 #include <thread>
 
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#include <emscripten/html5.h>
+#endif
+
 using namespace snake;
 
 using namespace std::chrono_literals;
@@ -48,52 +53,58 @@ Point getControl() {
     return control;
 }
 
-int main(int argc, char **argv) {
-    const auto settings = Settings{argc, argv};
+// Main is written as a struct to handle emscriptens control flow
+struct Main {
+    const Settings settings;
 
-    auto renderer = SdlRenderer{settings};
+    SdlRenderer renderer = {settings};
 
-    auto canvas = ObstacleCanvas{};
-    auto snake = Snake{canvas, settings.startLen};
-    auto logger = Logger{std::cout};
+    ObstacleCanvas canvas = {};
+    Snake snake = {canvas, settings.startLen};
+    Logger logger = Logger{std::cout};
 
-    auto numApples = int{0};
-    auto steps = int{0};
+    int numApples = 0;
+    int steps = 0;
 
-    canvas.putApple();
-    auto ai = Ai{snake, canvas, settings};
+    Ai ai = {snake, canvas, settings};
 
-    snake.logCallback([&] {
-        ++numApples;
-        logger.logProgress({
-            .steps = steps,
-            .apples = numApples,
-            .length = snake.len(),
-            .searchTimeMs = static_cast<long>(ai.lastSearchTime().count()),
-        });
-    });
-
-    Point control;
-
-    enum ControlModes {
+    enum class Mode {
         Human,
         Ai,
         DryrunAi,
     };
 
-    auto mode = Ai;
+    Mode mode = Mode::Ai;
 
-    for (; !snake.isDead(); ++steps) {
-        control = [&ai, mode] {
+    Main(int argc, char **argv)
+        : settings{argc, argv} {
+
+        canvas.putApple();
+
+        snake.logCallback([&] {
+            ++numApples;
+            logger.logProgress({
+                .steps = steps,
+                .apples = numApples,
+                .length = snake.len(),
+                .searchTimeMs = static_cast<long>(ai.lastSearchTime().count()),
+            });
+        });
+    }
+
+    void loop() {
+        ++steps;
+        Point control;
+        control = [this] {
             switch (mode) {
-            case Human:
+            case Mode::Human:
                 return getControl();
                 break;
-            case Ai:
+            case Mode::Ai:
                 getControl();
                 return ai.update();
                 break;
-            case DryrunAi: { // Update ai but let human do the moving
+            case Mode::DryrunAi: { // Update ai but let human do the moving
                 ai.update();
                 return getControl();
             } break;
@@ -101,7 +112,7 @@ int main(int argc, char **argv) {
             return Point{};
         }();
 
-        if (mode != Ai) {
+        if (mode != Mode::Ai) {
             snake.update(control);
         }
 
@@ -113,7 +124,7 @@ int main(int argc, char **argv) {
             renderer.finishDraw();
         }
 
-        if (mode == Ai) {
+        if (mode == Mode::Ai) {
             snake.update(control);
         }
 
@@ -122,17 +133,51 @@ int main(int argc, char **argv) {
         }
     }
 
-    auto terminalRenderer = TerminalRenderer{settings};
-    terminalRenderer.beginDraw();
-    terminalRenderer.draw(canvas);
-    terminalRenderer.finishDraw();
+    ~Main() {
 
-    if (!settings.hideGui && settings.msDelay) {
-        for (int i = 0; i < 1000; ++i) {
-            getControl();
-            std::this_thread::sleep_for(100ms);
+        auto terminalRenderer = TerminalRenderer{settings};
+        terminalRenderer.beginDraw();
+        terminalRenderer.draw(canvas);
+        terminalRenderer.finishDraw();
+
+        if (!settings.hideGui && settings.msDelay) {
+            for (int i = 0; i < 1000; ++i) {
+                getControl();
+                std::this_thread::sleep_for(100ms);
+            }
         }
+    }
+};
+
+#ifndef __EMSCRIPTEN__
+
+int main(int argc, char **argv) {
+    auto main = Main{argc, argv};
+
+    for (; !main.snake.isDead();) {
+        main.loop();
     }
 
     return 0;
 }
+
+#else
+
+auto emMain = Main{1, 0};
+
+void emLoop() {
+    emMain.loop();
+
+    if (emMain.snake.isDead()) {
+        emscripten_cancel_main_loop();
+    }
+}
+
+int main(int argc, char **argv) {
+    //    emscripten_request_animation_frame_loop(emLoop, 0);
+    emscripten_set_main_loop(emLoop, 60, 0);
+
+    return 0;
+}
+
+#endif

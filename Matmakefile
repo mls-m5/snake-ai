@@ -8,6 +8,7 @@ main
   command = [exe]
   !em:ldflags = -lSDL2 -lSDL2_image
   em:ldflags = -s USE_SDL=2
+  em:flags = -O3
 
 all
   in = @main
