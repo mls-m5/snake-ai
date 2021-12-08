@@ -18,12 +18,14 @@ arguments:
 --delay            delay between frames in ms (0 for as fast as possible)
 --help             show this help
 --startlen         start length of the snake
+--save-state       save states for bactracking and undoing last steps
 
 )_";
 
     bool shouldShowSearch = false;
     bool shouldShowPath = false;
     bool hideGui = false;
+    bool shouldSave = false;
 
     int msDelay = 100;
     int startLen = 10;
@@ -47,6 +49,9 @@ arguments:
             else if (arg == "--no-gui") {
                 hideGui = true;
                 msDelay = 0;
+            }
+            else if (arg == "--save-state") {
+                shouldSave = true;
             }
             else if (arg == "--startlen") {
                 ++i;

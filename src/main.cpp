@@ -7,6 +7,7 @@
 #include "sdlrenderer.h"
 #include "snake.h"
 #include "terminalrenderer.h"
+#include "undo.h"
 #include <iostream>
 #include <thread>
 
@@ -77,6 +78,7 @@ struct Main {
     ObstacleCanvas canvas = {};
     Snake snake = {canvas, settings.startLen};
     Logger logger = Logger{std::cout};
+    Undo undo;
 
     int numApples = 0;
     int steps = 0;
@@ -107,6 +109,34 @@ struct Main {
                 .searchTimeMs = static_cast<long>(ai.lastSearchTime().count()),
             });
         });
+
+        if (settings.shouldSave) {
+            undo.save(snake.save(0));
+        }
+    }
+
+    void render() {
+
+        if (!settings.hideGui) {
+            renderer.beginDraw();
+            renderer.draw(canvas);
+            renderer.draw(ai);
+            renderer.draw(snake);
+            renderer.finishDraw();
+        }
+    }
+
+    void undoStep() {
+        isPaused = true;
+
+        undo.pop();
+        snake.reset(undo.state());
+        ai.reset(undo.state());
+        steps = undo.state().step;
+
+        std::cout << "resetting to step " << undo.state().step << std::endl;
+
+        render();
     }
 
     void loop() {
@@ -129,6 +159,11 @@ struct Main {
             return control;
         }();
 
+        if (settings.shouldSave && control.isReversePressed) {
+            undoStep();
+            return;
+        }
+
         if (control.isPausePressed) {
             isPaused = !isPaused;
         }
@@ -139,16 +174,26 @@ struct Main {
             snake.update(control.direction);
         }
 
-        if (!settings.hideGui) {
-            renderer.beginDraw();
-            renderer.draw(canvas);
-            renderer.draw(ai);
-            renderer.draw(snake);
-            renderer.finishDraw();
-        }
+        render();
 
         if (shouldStep && mode == Mode::Ai) {
             snake.update(control.direction);
+        }
+
+        if (!shouldStep) {
+            return;
+        }
+
+        if (snake.isDead()) {
+            isPaused = true;
+            undoStep();
+            return;
+        }
+
+        if (settings.shouldSave) {
+            auto state = snake.save(steps);
+            ai.save(state);
+            undo.save(std::move(state));
         }
     }
 
@@ -170,7 +215,12 @@ int main(int argc, char **argv) {
         if (main.settings.msDelay) {
             std::this_thread::sleep_for(1ms * main.settings.msDelay);
         }
+        if (main.isPaused) {
+            std::this_thread::sleep_for(100ms);
+        }
     }
+
+    std::cout << "died :/" << std::endl;
 
     if (!main.settings.hideGui && main.settings.msDelay) {
         for (int i = 0; i < 1000; ++i) {

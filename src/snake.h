@@ -1,5 +1,6 @@
 #pragma once
 
+#include "gamestate.h"
 #include "obstaclecanvas.h"
 #include <functional>
 #include <list>
@@ -65,6 +66,12 @@ struct Snake {
         }
     }
 
+    void putOnCanvas() {
+        for (auto s : _segments) {
+            _canvas.set(s, ObstacleCanvas::Snake);
+        }
+    }
+
     // For two finger controller
     void rotate(int dir) {
         if (dir) {
@@ -84,6 +91,31 @@ struct Snake {
 
     const std::list<Point> &segments() const {
         return _segments;
+    }
+
+    // Reset state
+    void reset(const GameState &state) {
+        _segments.assign(state.snakeSegments.begin(),
+                         state.snakeSegments.end());
+        _len = state.snakeLen;
+        _direction = state.snakeDir;
+        _canvas.clear();
+        putOnCanvas();
+        _canvas.set(state.applePos, ObstacleCanvas::Apple);
+        _canvas.applePos = state.applePos;
+        _isDead = state.isDead;
+    }
+
+    GameState save(int stepId) {
+        return GameState{
+            .snakeSegments =
+                std::vector<Point>(_segments.begin(), _segments.end()),
+            .snakeLen = _len,
+            .snakeDir = _direction,
+            .applePos = _canvas.applePos,
+            .isDead = _isDead,
+            .step = stepId,
+        };
     }
 
     void logCallback(std::function<void()> f) {

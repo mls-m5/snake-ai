@@ -43,6 +43,14 @@ struct Ai {
         return _tailDelay;
     }
 
+    void save(GameState &state) {
+        state.aiTailDelay.assign(_tailDelay.begin(), _tailDelay.end());
+    }
+
+    void reset(const GameState &state) {
+        _tailDelay.assign(state.aiTailDelay.begin(), state.aiTailDelay.end());
+    }
+
 private:
     bool search(Point to,
                 Point from,
@@ -55,6 +63,7 @@ private:
     SearchCanvas _returnSearchCanvas;
     std::vector<Point> _edges;
     std::chrono::high_resolution_clock::duration _lastSearchTime = {};
+
     std::list<Point> _tailDelay;
 };
 

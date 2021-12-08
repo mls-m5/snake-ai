@@ -17,6 +17,7 @@ struct ObstacleCanvas : public Canvas<int> {
 
     using DataT = int;
 
+    // Put apple on random position
     void putApple();
 
     Point applePos;

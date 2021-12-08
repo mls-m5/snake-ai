@@ -36,7 +36,7 @@ void ObstacleCanvas::putApple() {
         return Point{};
     }();
 
-    set(applePos, ObstacleCanvas::Apple);
+    set(applePos, Apple);
 }
 
 } // namespace snake
