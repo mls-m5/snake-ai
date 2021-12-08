@@ -19,25 +19,40 @@ using namespace snake;
 
 using namespace std::chrono_literals;
 
-Point getControl() {
-    Point control = {};
+struct Controls {
+    Point direction;
+    bool isPausePressed = false;
+    bool isReversePressed = false;
+    bool isSingleStepPressed = false;
+};
 
+Controls getControl() {
+    Controls ret;
     for (auto event = sdl::pollEvent(); event; event = sdl::pollEvent()) {
         auto keyevent = event->key;
         switch (event->type) {
         case SDL_KEYDOWN:
             switch (keyevent.keysym.scancode) {
             case SDL_SCANCODE_LEFT:
-                control = {-1, 0};
+                ret.direction = {-1, 0};
                 break;
             case SDL_SCANCODE_RIGHT:
-                control = {1, 0};
+                ret.direction = {1, 0};
                 break;
             case SDL_SCANCODE_UP:
-                control = {0, -1};
+                ret.direction = {0, -1};
                 break;
             case SDL_SCANCODE_DOWN:
-                control = {0, 1};
+                ret.direction = {0, 1};
+                break;
+            case SDL_SCANCODE_SPACE:
+                ret.isPausePressed = true;
+                break;
+            case SDL_SCANCODE_BACKSPACE:
+                ret.isReversePressed = true;
+                break;
+            case SDL_SCANCODE_RETURN:
+                ret.isSingleStepPressed = true;
                 break;
             default:
                 break;
@@ -50,7 +65,7 @@ Point getControl() {
         }
     }
 
-    return control;
+    return ret;
 }
 
 // Main is written as a struct to handle emscriptens control flow
@@ -76,6 +91,8 @@ struct Main {
 
     Mode mode = Mode::Ai;
 
+    bool isPaused = false;
+
     Main(int argc, char **argv)
         : settings{argc, argv} {
 
@@ -94,26 +111,32 @@ struct Main {
 
     void loop() {
         ++steps;
-        Point control;
-        control = [this] {
-            switch (mode) {
-            case Mode::Human:
-                return getControl();
-                break;
-            case Mode::Ai:
-                getControl();
-                return ai.update();
-                break;
-            case Mode::DryrunAi: { // Update ai but let human do the moving
-                ai.update();
-                return getControl();
-            } break;
+        auto control = [this] {
+            auto control = getControl();
+            if (!isPaused || control.isSingleStepPressed) {
+                switch (mode) {
+                case Mode::Human:
+                    return control;
+                case Mode::Ai:
+                    control.direction = ai.update();
+                    return control;
+                case Mode::DryrunAi: { // Update ai but let human do the moving
+                    ai.update();
+                    return control;
+                } break;
+                }
             }
-            return Point{};
+            return control;
         }();
 
-        if (mode != Mode::Ai) {
-            snake.update(control);
+        if (control.isPausePressed) {
+            isPaused = !isPaused;
+        }
+
+        auto shouldStep = !isPaused || control.isSingleStepPressed;
+
+        if (shouldStep && mode != Mode::Ai) {
+            snake.update(control.direction);
         }
 
         if (!settings.hideGui) {
@@ -124,8 +147,8 @@ struct Main {
             renderer.finishDraw();
         }
 
-        if (mode == Mode::Ai) {
-            snake.update(control);
+        if (shouldStep && mode == Mode::Ai) {
+            snake.update(control.direction);
         }
     }
 

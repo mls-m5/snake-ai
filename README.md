@@ -1,6 +1,9 @@
+Snake ai
+========
 
+An attempt of a unbeatable snake ai using only simple and fast algorithms.
 
-Todo: 
-[x] Make the snake follow a outdated position of the tail position so it does
-not catch up with itself
-[ ] Handle cases when the apple spawns between the tail and the head
+Instructions:
+* Space - Pause/Unpause
+* Return - Single step when paused
+
